@@ -43,6 +43,7 @@
     <button class="tab-btn active" data-view="all">All Schemes</button>
     <button class="tab-btn" data-view="gainers">Top Gainers</button>
     <button class="tab-btn" data-view="chart">Chart View</button>
+    <button class="tab-btn" data-view="comparison">vs My Scheme</button>
   </div>
 
   <!-- All Schemes View -->
@@ -72,6 +73,14 @@
       <canvas id="valueChart"></canvas>
     </div>
     <div id="legendContainer"></div>
+  </div>
+
+  <!-- Comparison View (vs My Scheme) -->
+  <div class="view-container" data-view="comparison">
+    <div class="chart-container">
+      <canvas id="comparisonChart"></canvas>
+    </div>
+    <div id="comparisonLegendContainer"></div>
   </div>
 
   <p class="footer-note">Data fetched live from QSIF. Refresh page to update.</p>
@@ -343,6 +352,141 @@
       wrapper.appendChild(colorBox);
       wrapper.appendChild(text);
       legendContainer.appendChild(wrapper);
+    });
+
+    // ========================================
+    // COMPARISON CHART (vs My Scheme)
+    // ========================================
+    const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+    
+    // Calculate differences (other schemes vs MY SCHEME)
+    const comparisonLabels = chartLabels.slice(1); // Exclude MY SCHEME
+    const mySchemeValue = chartValues[0];
+    const comparisonDiffs = chartValues.slice(1).map(val => val - mySchemeValue);
+    
+    console.log('Comparison Diffs:', comparisonDiffs);
+    
+    // Set canvas height for comparison chart
+    const compCanvas = document.getElementById('comparisonChart');
+    const compHeight = Math.max(400, comparisonLabels.length * 60);
+    compCanvas.height = compHeight;
+    
+    // Color: green if ahead, red if behind
+    const comparisonColors = comparisonDiffs.map(diff => {
+      return diff >= 0 ? '#10b981' : '#ef4444';
+    });
+    
+    // Calculate scale
+    const compMin = Math.min(...comparisonDiffs);
+    const compMax = Math.max(...comparisonDiffs);
+    const compRange = compMax - compMin;
+    const compYMin = Math.floor(compMin - compRange * 0.1);
+    const compYMax = Math.ceil(compMax + compRange * 0.1);
+    
+    new Chart(comparisonCtx, {
+      type: 'bar',
+      indexAxis: 'y',
+      data: {
+        labels: comparisonLabels,
+        datasets: [{
+          label: 'Difference vs My Scheme (₹)',
+          data: comparisonDiffs,
+          backgroundColor: comparisonColors,
+          borderRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const val = ctx.raw;
+                if (val >= 0) {
+                  return 'Ahead by: ₹' + val.toLocaleString();
+                } else {
+                  return 'Behind by: ₹' + Math.abs(val).toLocaleString();
+                }
+              }
+            }
+          }
+        },
+        scales: {
+          y: { 
+            ticks: { 
+              display: true,
+              font: {
+                size: window.innerWidth > 768 ? 10 : 11
+              },
+              autoSkip: false,
+              callback: function(value, index) {
+                const label = this.getLabelForValue(value);
+                if (window.innerWidth <= 768) {
+                  return '#' + (index + 1);
+                }
+                return label.length > 40 ? label.substring(0, 40) + '...' : label;
+              }
+            },
+            grid: {
+              display: true,
+              color: 'rgba(0, 0, 0, 0.05)'
+            }
+          },
+          x: {
+            beginAtZero: true,
+            min: compYMin,
+            max: compYMax,
+            ticks: {
+              callback: value => '₹' + value.toLocaleString()
+            },
+            grid: {
+              display: true,
+              color: (context) => {
+                return context.tick.value === 0 ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 0.05)';
+              },
+              lineWidth: (context) => {
+                return context.tick.value === 0 ? 2 : 1;
+              }
+            }
+          }
+        },
+        layout: {
+          padding: {
+            left: 10,
+            right: 10,
+            top: 10,
+            bottom: 10
+          }
+        }
+      }
+    });
+
+    // Generate comparison legend
+    const compLegendContainer = document.getElementById('comparisonLegendContainer');
+    comparisonLabels.forEach((label, index) => {
+      const colorBox = document.createElement('span');
+      colorBox.style.backgroundColor = comparisonColors[index];
+      colorBox.style.display = 'inline-block';
+      colorBox.style.width = '20px';
+      colorBox.style.height = '20px';
+      colorBox.style.marginRight = '5px';
+      colorBox.style.verticalAlign = 'middle';
+
+      const text = document.createElement('span');
+      const diff = comparisonDiffs[index];
+      const diffText = diff >= 0 ? 
+        ` (+₹${diff.toLocaleString()})` : 
+        ` (-₹${Math.abs(diff).toLocaleString()})`;
+      text.innerText = label + diffText;
+      text.style.marginRight = '15px';
+
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(colorBox);
+      wrapper.appendChild(text);
+      compLegendContainer.appendChild(wrapper);
     });
   </script>
 </body>
