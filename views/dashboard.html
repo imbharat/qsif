@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QSIF NAV Dashboard</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>QSIF NAV Dashboard</h1>
+
+  <section class="summary">
+    <p class="scheme-name">{{schemeName}}</p>
+    <dl>
+      <div class="data-row">
+        <dt>Latest NAV ({{date}}):</dt>
+        <dd>₹{{nav}}</dd>
+      </div>
+      <div class="data-row">
+        <dt>Units:</dt>
+        <dd>{{units}}</dd>
+      </div>
+      <div class="data-row">
+        <dt>Current Value:</dt>
+        <dd>₹{{currentValue}}</dd>
+      </div>
+      <div class="data-row">
+        <dt>Gain/Loss:</dt>
+        <dd class="gain {{gainClass}}">₹{{gainLoss}}</dd>
+      </div>
+      <div class="data-row">
+        <dt>Return:</dt>
+        <dd class="gain {{gainClass}}">{{returnPercent}}%</dd>
+      </div>
+    </dl>
+  </section>
+
+  <h3>Other schemes' performance:</h3>
+  <div class="comparison-cards">
+    {{comparisonCards}}
+  </div>
+
+  <div class="chart-container">
+    <canvas id="valueChart"></canvas>
+  </div>
+
+  <div id="legendContainer"></div>
+
+  <p class="footer-note">Data fetched live from QSIF. Refresh page to update.</p>
+
+  <script>
+    const ctx = document.getElementById('valueChart').getContext('2d');
+    const chartLabels = {{chartLabels}};
+    const chartValues = {{chartValues}};
+    const chartColors = {{chartColors}};
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartLabels,
+        datasets: [{
+          label: 'Current Value (₹)',
+          data: chartValues,
+          backgroundColor: chartColors,
+          borderRadius: 5,
+          barThickness: window.innerWidth < 600 ? 15 : 40
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => '₹' + ctx.raw.toLocaleString()
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { display: false } },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => '₹' + value.toLocaleString()
+            }
+          }
+        }
+      }
+    });
+
+    // Generate legend
+    const legendContainer = document.getElementById('legendContainer');
+    chartLabels.forEach((label, index) => {
+      const colorBox = document.createElement('span');
+      colorBox.style.backgroundColor = chartColors[index];
+      colorBox.style.display = 'inline-block';
+      colorBox.style.width = '20px';
+      colorBox.style.height = '20px';
+      colorBox.style.marginRight = '5px';
+      colorBox.style.verticalAlign = 'middle';
+
+      const text = document.createElement('span');
+      text.innerText = label;
+      text.style.marginRight = '15px';
+
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(colorBox);
+      wrapper.appendChild(text);
+      legendContainer.appendChild(wrapper);
+    });
+  </script>
+</body>
+</html>

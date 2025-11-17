@@ -1,0 +1,13 @@
+{
+  "name": "qsif",
+  "version": "1.0.0",
+  "description": "Track QSIF NAV and your returns",
+  "main": "index.js",
+  "scripts": {
+    "start-dev": "node --inspect-brk index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

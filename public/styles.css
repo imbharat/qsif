@@ -1,0 +1,158 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding: 0.75rem;
+  background: #f9fafb;
+  color: #013663;
+}
+
+h1 {
+  text-align: center;
+  font-weight: 700;
+  margin: 1rem 0;
+  font-size: 1.6rem;
+}
+
+.summary {
+  background: #d9e7ff;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+}
+
+.summary .scheme-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #0b4a94;
+  text-align: center;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.data-row dt {
+  font-weight: 600;
+}
+
+.data-row dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.gain {
+  font-weight: 700;
+}
+
+.gain.positive {
+  color: #2c9c1a;
+}
+
+.gain.negative {
+  color: #d32f2f;
+}
+
+h3 {
+  font-weight: 600;
+  margin: 0.8rem 0;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.comparison-cards {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 0.75rem;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.08);
+  font-size: 0.9rem;
+  margin: 0 auto;
+}
+
+.card dt {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.card dd {
+  margin: 0 0 0.3rem 0;
+}
+
+.chart-container {
+  background: white;
+  padding: 0.75rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.08);
+  margin-bottom: 1rem;
+  height: 400px;
+}
+
+#legendContainer div {
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+#legendContainer span {
+  vertical-align: middle;
+}
+
+.footer-note {
+  font-size: 0.8rem;
+  text-align: center;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+/* Tablets */
+@media (min-width: 601px) and (max-width: 900px) {
+  .comparison-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
+  .data-row {
+    font-size: 1rem;
+  }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .data-row {
+    font-size: 0.9rem;
+    flex-direction: column;
+  }
+  .data-row dt,
+  .data-row dd {
+    flex: 1 1 100%;
+  }
+  .card {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+  .chart-container {
+    padding: 0.5rem;
+    height: 300px;
+  }
+  #legendContainer div {
+    text-align: left;
+  }
+}

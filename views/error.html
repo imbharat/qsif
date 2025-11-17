@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QSIF NAV Dashboard - Error</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .error-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .error-title {
+      color: #d32f2f;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .error-message {
+      background: #fff3cd;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .schemes-list {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.08);
+    }
+    .schemes-list h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .schemes-list ul {
+      list-style: none;
+      padding: 0;
+    }
+    .schemes-list li {
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    .schemes-list li:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>QSIF NAV Dashboard</h1>
+  
+  <div class="error-container">
+    <h2 class="error-title">❌ Error: Your scheme not found</h2>
+    
+    <div class="error-message">
+      <p>Looking for: <strong>{{schemeName}}</strong></p>
+    </div>
+    
+    <div class="schemes-list">
+      <h2>Available schemes ({{totalSchemes}} total):</h2>
+      <ul>
+        {{schemesList}}
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
