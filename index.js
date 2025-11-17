@@ -334,22 +334,49 @@ app.get("/", async (req, res) => {
       };
     });
 
-    // Chart data
+    // Chart data - showing gain/loss instead of total value
     const chartLabels = [YOUR_SCHEME + " (Growth)", ...comparison.map(s => s.name)];
-    const chartValues = [yourCurrentValue, ...comparison.map(s => s.value)];
+    const chartValues = [yourGainLoss, ...comparison.map(s => s.gainLoss)];
 
-    // Random colors for each bar
-    const chartColors = chartLabels.map(() => {
-      const r = Math.floor(Math.random() * 200) + 30;
-      const g = Math.floor(Math.random() * 200) + 30;
-      const b = Math.floor(Math.random() * 200) + 30;
-      return `rgb(${r},${g},${b})`;
+    console.log('\n📊 Chart Data:');
+    console.log('Total labels:', chartLabels.length);
+    console.log('Total values:', chartValues.length);
+    console.log('Labels:', chartLabels);
+    console.log('Values:', chartValues);
+
+    // Special color for your scheme, random colors for others
+    const chartColors = [yourGainLoss, ...comparison.map(s => s.gainLoss)].map((gain, index) => {
+      if (index === 0) {
+        // Your scheme - special gradient/bright color
+        return gain >= 0 ? '#10b981' : '#ef4444';  // Bright green or bright red
+      } else {
+        // Other schemes - random colors
+        const r = Math.floor(Math.random() * 150) + 80;
+        const g = Math.floor(Math.random() * 150) + 80;
+        const b = Math.floor(Math.random() * 150) + 80;
+        return `rgb(${r},${g},${b})`;
+      }
     });
 
     // Build comparison cards HTML
     const comparisonCards = comparison.map(s => `
       <dl class="card">
         <dt>${s.name}</dt>
+        <dd>NAV: ₹${s.nav.toFixed(4)}</dd>
+        <dd>Value: ₹${s.value.toFixed(2)}</dd>
+        <dd class="gain ${s.gainLoss >= 0 ? 'positive' : 'negative'}">Gain/Loss: ₹${s.gainLoss.toFixed(2)}</dd>
+        <dd class="gain ${s.gainLoss >= 0 ? 'positive' : 'negative'}">Return: ${s.returnPercent.toFixed(2)}%</dd>
+      </dl>
+    `).join('');
+
+    // Top gainers for carousel (sorted by return percent, top 5)
+    const topGainers = [...comparison]
+      .sort((a, b) => b.returnPercent - a.returnPercent)
+      .slice(0, 5);
+    
+    const topGainersCards = topGainers.map((s, index) => `
+      <dl class="card">
+        <dt>🏆 #${index + 1} - ${s.name}</dt>
         <dd>NAV: ₹${s.nav.toFixed(4)}</dd>
         <dd>Value: ₹${s.value.toFixed(2)}</dd>
         <dd class="gain ${s.gainLoss >= 0 ? 'positive' : 'negative'}">Gain/Loss: ₹${s.gainLoss.toFixed(2)}</dd>
@@ -368,6 +395,7 @@ app.get("/", async (req, res) => {
       returnPercent: yourReturnPercent.toFixed(2),
       gainClass: yourGainLoss >= 0 ? 'positive' : 'negative',
       comparisonCards: comparisonCards,
+      topGainersCards: topGainersCards,
       chartLabels: JSON.stringify(chartLabels),
       chartValues: JSON.stringify(chartValues),
       chartColors: JSON.stringify(chartColors)

@@ -37,54 +37,276 @@
   </section>
 
   <h3>Other schemes' performance:</h3>
-  <div class="comparison-cards">
-    {{comparisonCards}}
+  
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button class="tab-btn active" data-view="all">All Schemes</button>
+    <button class="tab-btn" data-view="gainers">Top Gainers</button>
+    <button class="tab-btn" data-view="chart">Chart View</button>
   </div>
 
-  <div class="chart-container">
-    <canvas id="valueChart"></canvas>
+  <!-- All Schemes View -->
+  <div class="view-container active" data-view="all">
+    <div class="comparison-cards">
+      {{comparisonCards}}
+    </div>
   </div>
 
-  <div id="legendContainer"></div>
+  <!-- Top Gainers View -->
+  <div class="view-container" data-view="gainers">
+    <div class="carousel-container">
+      <button class="carousel-btn prev" onclick="moveCarousel(-1)">❮</button>
+      <div class="carousel-wrapper">
+        <div class="carousel-track" id="gainersCarousel">
+          {{topGainersCards}}
+        </div>
+      </div>
+      <button class="carousel-btn next" onclick="moveCarousel(1)">❯</button>
+    </div>
+    <div class="carousel-indicators" id="carouselDots"></div>
+  </div>
+
+  <!-- Chart View -->
+  <div class="view-container" data-view="chart">
+    <div class="chart-container">
+      <canvas id="valueChart"></canvas>
+    </div>
+    <div id="legendContainer"></div>
+  </div>
 
   <p class="footer-note">Data fetched live from QSIF. Refresh page to update.</p>
 
   <script>
+    // Tab Switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const viewContainers = document.querySelectorAll('.view-container');
+    
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetView = btn.dataset.view;
+        
+        // Update active tab
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update active view
+        viewContainers.forEach(v => v.classList.remove('active'));
+        document.querySelector(`.view-container[data-view="${targetView}"]`).classList.add('active');
+      });
+    });
+
+    // Carousel functionality
+    let currentSlide = 0;
+    const carousel = document.getElementById('gainersCarousel');
+    const cards = carousel ? carousel.children : [];
+    const totalSlides = cards.length;
+    let autoScrollInterval = null;
+
+    function updateCarousel() {
+      if (!carousel || totalSlides === 0) return;
+      
+      const offset = -currentSlide * 100;
+      carousel.style.transform = `translateX(${offset}%)`;
+      
+      // Update dots
+      updateDots();
+    }
+
+    function moveCarousel(direction) {
+      currentSlide += direction;
+      if (currentSlide < 0) currentSlide = totalSlides - 1;
+      if (currentSlide >= totalSlides) currentSlide = 0;
+      updateCarousel();
+      
+      // Reset auto-scroll timer when manually navigating
+      resetAutoScroll();
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateCarousel();
+      resetAutoScroll();
+    }
+
+    function updateDots() {
+      const dotsContainer = document.getElementById('carouselDots');
+      if (!dotsContainer) return;
+      
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'dot' + (i === currentSlide ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    // Auto-scroll functionality
+    function startAutoScroll() {
+      if (totalSlides > 1) {
+        autoScrollInterval = setInterval(() => {
+          moveCarousel(1);
+        }, 5000); // 5 seconds
+      }
+    }
+
+    function stopAutoScroll() {
+      if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+      }
+    }
+
+    function resetAutoScroll() {
+      stopAutoScroll();
+      startAutoScroll();
+    }
+
+    // Initialize carousel
+    if (totalSlides > 0) {
+      updateDots();
+      startAutoScroll();
+      
+      // Pause auto-scroll on hover
+      const carouselContainer = document.querySelector('.carousel-container');
+      if (carouselContainer) {
+        carouselContainer.addEventListener('mouseenter', stopAutoScroll);
+        carouselContainer.addEventListener('mouseleave', startAutoScroll);
+      }
+    }
+
+    // Chart rendering
     const ctx = document.getElementById('valueChart').getContext('2d');
     const chartLabels = {{chartLabels}};
     const chartValues = {{chartValues}};
     const chartColors = {{chartColors}};
 
+    console.log('Chart Labels:', chartLabels);
+    console.log('Chart Values:', chartValues);
+    console.log('Chart Colors:', chartColors);
+    console.log('Total items:', chartLabels.length);
+
+    // Set canvas height based on number of items
+    const canvas = document.getElementById('valueChart');
+    const itemHeight = 60; // pixels per bar (increased for better visibility)
+    const minHeight = 400;
+    const calculatedHeight = Math.max(minHeight, chartLabels.length * itemHeight);
+    canvas.height = calculatedHeight;
+
+    // Calculate min and max for better scale
+    const minValue = Math.min(...chartValues);
+    const maxValue = Math.max(...chartValues);
+    const range = maxValue - minValue;
+    const yMin = Math.floor(minValue - range * 0.1);
+    const yMax = Math.ceil(maxValue + range * 0.1);
+
+    // Create border colors - no special border
+    const borderColors = chartColors.map(color => color);
+    const borderWidths = chartColors.map(() => 0);
+
+    // Custom plugin to draw text on your scheme's bar
+    const barTextPlugin = {
+      id: 'barText',
+      afterDatasetsDraw: (chart) => {
+        const ctx = chart.ctx;
+        const meta = chart.getDatasetMeta(0);
+        const bar = meta.data[0]; // First bar (your scheme)
+        
+        if (bar && bar.width > 100) { // Only show text if bar is wide enough
+          ctx.save();
+          
+          // Position text in the middle of the bar (not at the start)
+          const textX = bar.base + (bar.width / 2);
+          const textY = bar.y;
+          
+          // Set text properties
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 14px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 6;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          
+          // Draw text
+          ctx.fillText('MY SCHEME', textX, textY);
+          
+          ctx.restore();
+        }
+      }
+    };
+
     new Chart(ctx, {
       type: 'bar',
+      indexAxis: 'y',  // Makes bars horizontal
       data: {
         labels: chartLabels,
         datasets: [{
-          label: 'Current Value (₹)',
+          label: 'Gain/Loss (₹)',
           data: chartValues,
           backgroundColor: chartColors,
-          borderRadius: 5,
-          barThickness: window.innerWidth < 600 ? 15 : 40
+          borderColor: borderColors,
+          borderWidth: borderWidths,
+          borderRadius: 5
         }]
       },
+      plugins: [barTextPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        indexAxis: 'y',
         plugins: {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: ctx => '₹' + ctx.raw.toLocaleString()
+              label: ctx => 'Gain/Loss: ₹' + ctx.raw.toLocaleString()
             }
           }
         },
         scales: {
-          x: { ticks: { display: false } },
-          y: {
-            beginAtZero: true,
+          y: { 
+            ticks: { 
+              display: true,
+              font: {
+                size: window.innerWidth > 768 ? 10 : 11
+              },
+              autoSkip: false,
+              callback: function(value, index) {
+                const label = this.getLabelForValue(value);
+                
+                // Mobile: show #1, #2, #3... (much smaller)
+                if (window.innerWidth <= 768) {
+                  return '#' + (index + 1);
+                }
+                
+                // Desktop: show truncated label
+                return label.length > 40 ? label.substring(0, 40) + '...' : label;
+              }
+            },
+            grid: {
+              display: true,
+              color: 'rgba(0, 0, 0, 0.05)'
+            }
+          },
+          x: {
+            beginAtZero: false,
+            min: yMin,
+            max: yMax,
             ticks: {
               callback: value => '₹' + value.toLocaleString()
+            },
+            grid: {
+              display: true
             }
+          }
+        },
+        layout: {
+          padding: {
+            left: 10,
+            right: 10,
+            top: 10,
+            bottom: 10
           }
         }
       }
@@ -100,10 +322,22 @@
       colorBox.style.height = '20px';
       colorBox.style.marginRight = '5px';
       colorBox.style.verticalAlign = 'middle';
+      
+      // Add white border for your scheme
+      if (index === 0) {
+        colorBox.style.border = '3px solid white';
+        colorBox.style.boxShadow = '0 0 8px rgba(0,0,0,0.3)';
+      }
 
       const text = document.createElement('span');
       text.innerText = label;
       text.style.marginRight = '15px';
+      
+      // Bold text for your scheme
+      if (index === 0) {
+        text.style.fontWeight = 'bold';
+        text.innerText = '⭐ ' + label;
+      }
 
       const wrapper = document.createElement('div');
       wrapper.appendChild(colorBox);
