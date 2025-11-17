@@ -144,6 +144,8 @@ h3::after {
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
+  white-space: nowrap;
+  flex: 0 1 auto;
 }
 
 .tab-btn:hover {
@@ -564,11 +566,16 @@ h3::after {
   
   .tab-navigation {
     gap: 0.4rem;
+    margin-bottom: 1.5rem;
   }
   
   .tab-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.85rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.8rem;
+    flex: 1 1 45%;
+    min-width: 45%;
+    max-width: 48%;
+    text-align: center;
   }
   
   .carousel-container {
