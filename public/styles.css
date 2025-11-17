@@ -1,30 +1,37 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0;
-  padding: 0.75rem;
+  padding: 1rem;
   background: #f9fafb;
   color: #013663;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 h1 {
   text-align: center;
   font-weight: 700;
-  margin: 1rem 0;
-  font-size: 1.6rem;
+  margin: 1.5rem 0;
+  font-size: 2rem;
+  color: #0b4a94;
 }
 
 .summary {
-  background: #d9e7ff;
-  border-radius: 10px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  background: linear-gradient(135deg, #d9e7ff 0%, #e8f0ff 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
 }
 
 .summary .scheme-name {
   font-weight: 700;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
   color: #0b4a94;
   text-align: center;
 }
@@ -32,21 +39,25 @@ h1 {
 .data-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.95rem;
-  margin-bottom: 0.4rem;
+  font-size: 1rem;
+  margin-bottom: 0.6rem;
+  padding: 0.3rem 0;
 }
 
 .data-row dt {
   font-weight: 600;
+  color: #013663;
 }
 
 .data-row dd {
   margin: 0;
   font-weight: 500;
+  color: #1a5490;
 }
 
 .gain {
   font-weight: 700;
+  font-size: 1.05rem;
 }
 
 .gain.positive {
@@ -59,51 +70,78 @@ h1 {
 
 h3 {
   font-weight: 600;
-  margin: 0.8rem 0;
+  margin: 2rem 0 1.5rem 0;
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
+  color: #0b4a94;
 }
 
 .comparison-cards {
   display: grid;
-  gap: 0.75rem;
+  gap: 1rem;
   grid-template-columns: 1fr;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card {
   background: white;
-  border-radius: 10px;
-  padding: 0.75rem;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.08);
-  font-size: 0.9rem;
-  margin: 0 auto;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+  font-size: 0.95rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #e5e7eb;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.1);
 }
 
 .card dt {
   font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 0.2rem;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #013663;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.3rem;
 }
 
 .card dd {
-  margin: 0 0 0.3rem 0;
+  margin: 0 0 0.4rem 0;
+  color: #374151;
 }
 
 .chart-container {
   background: white;
-  padding: 0.75rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.08);
-  margin-bottom: 1rem;
-  height: 400px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+  margin-bottom: 2rem;
+  height: 450px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #e5e7eb;
+}
+
+#legendContainer {
+  margin-bottom: 2rem;
+  text-align: center;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #legendContainer div {
   display: inline-block;
-  margin-right: 10px;
-  margin-bottom: 5px;
-  text-align: center;
+  margin-right: 15px;
+  margin-bottom: 8px;
+  text-align: left;
+  font-size: 0.9rem;
 }
 
 #legendContainer span {
@@ -111,48 +149,142 @@ h3 {
 }
 
 .footer-note {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   text-align: center;
-  color: #666;
-  margin-bottom: 1rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-style: italic;
 }
 
-/* Tablets */
-@media (min-width: 601px) and (max-width: 900px) {
+/* Large Desktop (1200px+) */
+@media (min-width: 1200px) {
+  body {
+    padding: 2rem;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    margin: 2rem 0;
+  }
+  
+  .comparison-cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .chart-container {
+    height: 500px;
+    padding: 2rem;
+  }
+  
+  .summary {
+    padding: 2rem;
+  }
+}
+
+/* Desktop (900px - 1199px) */
+@media (min-width: 900px) and (max-width: 1199px) {
+  body {
+    padding: 1.5rem;
+  }
+  
+  h1 {
+    font-size: 2.2rem;
+  }
+  
+  .comparison-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+  
+  .chart-container {
+    height: 480px;
+  }
+}
+
+/* Tablet (601px - 899px) */
+@media (min-width: 601px) and (max-width: 899px) {
   .comparison-cards {
     grid-template-columns: repeat(2, 1fr);
   }
+  
   h1 {
     font-size: 1.8rem;
   }
+  
   .data-row {
     font-size: 1rem;
   }
+  
+  .chart-container {
+    height: 420px;
+  }
 }
 
-/* Phones */
+/* Mobile (up to 600px) */
 @media (max-width: 600px) {
+  body {
+    padding: 0.75rem;
+  }
+  
   h1 {
     font-size: 1.5rem;
-    margin-bottom: 0.8rem;
+    margin: 1rem 0;
   }
+  
+  .summary {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .summary .scheme-name {
+    font-size: 1.1rem;
+  }
+  
   .data-row {
     font-size: 0.9rem;
     flex-direction: column;
+    padding: 0.2rem 0;
   }
+  
   .data-row dt,
   .data-row dd {
     flex: 1 1 100%;
   }
+  
+  h3 {
+    font-size: 1.2rem;
+    margin: 1.5rem 0 1rem 0;
+  }
+  
+  .comparison-cards {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
   .card {
     font-size: 0.85rem;
-    padding: 0.6rem;
+    padding: 0.75rem;
   }
+  
+  .card dt {
+    font-size: 0.9rem;
+  }
+  
   .chart-container {
-    padding: 0.5rem;
+    padding: 0.75rem;
     height: 300px;
+    margin-bottom: 1rem;
   }
+  
+  #legendContainer {
+    margin-bottom: 1rem;
+  }
+  
   #legendContainer div {
+    display: block;
     text-align: left;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
   }
 }
